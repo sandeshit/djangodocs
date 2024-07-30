@@ -4,10 +4,13 @@ from .models import Question, Choice
 from django.http import Http404
 from django.db.models import F
 from django.urls import reverse
+from django.views import generic
+
+from .models import Choice, Question
 
 
 
-def detail(request, question_id):
+'''def detail(request, question_id):
     
     question = get_object_or_404(Question, pk=question_id)
     
@@ -15,9 +18,24 @@ def detail(request, question_id):
 
 def results(request, question_id):
     question = get_object_or_404(Question, pk = question_id)
-    return render(request, "polls/results.html", {"question": question})
+    return render(request, "polls/results.html", {"question": question})'''
+
+
+class IndexView(generic.ListView):
+    template_name = 'polls/index.html'
+    context_object_name = 'latest_question_list'
+
+    def get_queryset(self):
+        return Question.objects.order_by("-pub_date")[:5]
     
 
+class DetailView(generic.DeleteView):
+    model = Question
+    template_name = "polls/detail.html"
+
+class ResultsView(generic.DeleteView):
+    model = Question
+    template_name = "polls/results.html"
 
 def vote(request, question_id):
     question = get_object_or_404(Question, pk = question_id)
@@ -39,11 +57,11 @@ def vote(request, question_id):
 
     
 
-def index(request):
+'''def index(request):
     latest_question_list = Question.objects.order_by("-pub_date")[:5]
     context = {
         "latest_question_list": latest_question_list,
     }
     return render(request, "polls/index.html", context)
     #output = ", ".join([q.question_text for q in latest_question_list])
-    #return HttpResponse(output)
+    #return HttpResponse(output)'''
